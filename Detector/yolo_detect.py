@@ -55,14 +55,14 @@ class Yolo_detector:
                     confidences.append(float(confidence))
                     class_ids.append(class_id)
 
-        indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
-        font = cv2.FONT_HERSHEY_PLAIN
-        for i in range(len(boxes)):
-            if i in indexes:
-                x, y, w, h = boxes[i]
-                label = str(self.classes[class_ids[i]])
-                color = self.colors[class_ids[i]]
-                cv2.rectangle(img, (x, y), (x+w, y+h), color, 2)
-                cv2.putText(img, label, (x, y-2), font, 1, color, 2)
+        # indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.5, 0.4)
+        # font = cv2.FONT_HERSHEY_PLAIN
+        # for i in range(len(boxes)):
+        #     if i in indexes:
+        #         x, y, w, h = boxes[i]
+        #         label = str(self.classes[class_ids[i]])
+        #         color = self.colors[class_ids[i]]
+        #         cv2.rectangle(img, (x, y), (x+w, y+h), color, 2)
+        #         cv2.putText(img, label, (x, y-2), font, 1, color, 2)
         return boxes, class_ids
 

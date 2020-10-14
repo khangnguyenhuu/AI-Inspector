@@ -45,7 +45,6 @@ class Color_check:
             y_max = max(y, y_max)
             y_min = min(y, y_min)
         cropped_img = mask_img[y_min:y_max, x_min:x_max]
-        self.visualize(cropped_img)
         
         count_green_pixel = 0
         count_notgreen_pixel = 0
