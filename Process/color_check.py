@@ -35,7 +35,7 @@ class Color_check:
         y_max = 0
         for y in range (mask_img.shape[0]):
             for x in range (mask_img.shape[1]):
-                if ((mask_img[y][x][0],mask_img[y][x][1],mask_img[y][x][2])  != (0,0,0)):
+                if ((mask_img[y][x][0],mask_img[y][x][1],mask_img[y][x][2]) != (0,0,0)):
                     X.append (x)
                     Y.append (y)
         for x in X:
@@ -56,10 +56,8 @@ class Color_check:
         ratio = count_notgreen_pixel / count_green_pixel
         if (ratio > 0.2):
             return 0
-            # cv2.putText(self.img, 'Chai khong dong nap', (500//4,500//4), cv2.FONT_HERSHEY_SIMPLEX, fontScale = 1, color = (0,0,0), thickness = 2)
         else:
             return 1
-            #cv2.putText(self.img, 'Chai dong nap', (500//4,500//4), cv2.FONT_HERSHEY_SIMPLEX, fontScale = 1, color = (0,0,0), thickness = 2)
 
 
 
