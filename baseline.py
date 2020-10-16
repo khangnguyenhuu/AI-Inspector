@@ -28,12 +28,12 @@ class bottle_cap_check:
     def __init__(self, parser): 
         self.parser = parser
         self.Yolo = Yolo_detector(self.parser.yolo_config_classes, self.parser.config_model, self.parser.model_weigths)
-        
+        print (self.parser)
     
-    def process_img(self, ori_img = None):
+    def process_image(self, ori_img = None):
         if (self.parser.video == False):
             ori_img = cv2.imread(self.parser.img_path)
-        img = cv2.resize(ori_img, (int (ori_img.shape[1]/5), int(ori_img.shape[0]/5)))
+        img = cv2.resize(ori_img, (ori_img.shape[1]//3, ori_img.shape[0]//3))
         boxes, class_ids = self.Yolo.predict_image(img)
         Not_good = 0
         Blank = np.ones((img.shape[0],400,3), np.uint8)*255
@@ -63,7 +63,7 @@ class bottle_cap_check:
                     Not_good = 1
                     cv2.putText(Blank, 'Status: Not good', (Blank.shape[0]//8, Blank.shape[1]//8), cv2.FONT_HERSHEY_SIMPLEX, fontScale = 1, color = (0,0,0), thickness = 2)
                     day, time = get_day_time()
-        result = cv2.hconcat([img, Blank])
+        result = np.concatenate((img,Blank),axis=1)
         return result
   
     def process_video (self):
@@ -77,12 +77,14 @@ class bottle_cap_check:
         cap.release()
         cap = cv2.VideoCapture(self.parser.video_path)
         while True: 
+            if frame is None:
+                break
             _, frame = cap.read()
-            result_frame = self.process_img(frame)
+            result_frame = self.process_image(frame)
             if self.parser.visualize == True: 
                 cv2.imshow('video', result_frame)
             if self.parser.output_path != None: 
-                writer.write(frame)
+                writer.write(result_frame)
         cv2.waitKey(0)    
         cap.release()
         cv2.destroyAllWindows()
@@ -91,52 +93,13 @@ class bottle_cap_check:
 if __name__ == "__main__":
 
     parser = parse_args()
-    solve = abc(parser)
-    solve.process_video()
-    # cv2.imshow('img', img)
-    # cv2.waitKey(0)
-    # if (parser.v == True):
-            # Yolo = Yolo_detector("./Detector/cfg/obj.names", "./Detector/cfg/yolov3_Box.cfg", "Detector\model_weigths\yolov3_Box_last.weights")
-            # Yolo.predict_videos('data\VID_20201012_170500.mp4')
-
-
-    # Yolo = Yolo_detector("./Detector/cfg/obj.names", "./Detector/cfg/yolov3_Box.cfg", "./Detector/model_weigths/yolov3_BB_last.weights")
-    # ori_img = cv2.imread('Data\SNB-6004_20201015113600.jpeg')
-    # img = cv2.resize(ori_img, (int (ori_img.shape[1]*0.4), int(ori_img.shape[0]*0.4)))
-    
-    # #detect step
-    # cuda.select_device(0)
-    # boxes, class_ids = Yolo.detect_image(img)
-    # cuda.close()
-
-    # Not_good = 0
-    # Blank = np.ones((img.shape[0],400,3), np.uint8)*255
-    # Blank_to_save = Blank.copy()
-    # img_to_save = img.copy()
-    # print(class_ids)
-    # if (6 in class_ids):
-    #     Not_good = 1
-    #     cv2.putText(Blank, 'Status: Not good', (Blank.shape[0]//8, Blank.shape[1]//8), cv2.FONT_HERSHEY_SIMPLEX, fontScale = 1, color = (0,0,0), thickness = 2)
-                        
-    #     day, time = get_day_time()
-    # else:
-    #     for i in range (len(boxes)):
-    #         if (2 in class_ids and 3 in class_ids):
-    #             if (class_ids[i] == 3):
-    #                 process_img = img[boxes[i][1]:boxes[i][1]+boxes[i][3], boxes[i][0]: boxes[i][0] + boxes[i][2]]
-    #                 color_check = Color_check(process_img)
-    #                 check = color_check.Process()
-    #                 if (check == 0):
-    #                     Not_good = 1
-    #                     cv2.putText(Blank, 'Status: Not good', (Blank.shape[0]//8, Blank.shape[1]//8), cv2.FONT_HERSHEY_SIMPLEX, fontScale = 1, color = (0,0,0), thickness = 2)
-    #                     day, time = get_day_time()
-    #                 else:
-    #                     cv2.putText(Blank, 'Status: OK', (Blank.shape[0]//8, Blank.shape[1]//8), cv2.FONT_HERSHEY_SIMPLEX, fontScale = 1, color = (0,0,0), thickness = 2)
-    #         else:
-    #             Not_good = 1
-    #             cv2.putText(Blank, 'Status: Not good', (Blank.shape[0]//8, Blank.shape[1]//8), cv2.FONT_HERSHEY_SIMPLEX, fontScale = 1, color = (0,0,0), thickness = 2)
-    #             day, time = get_day_time()   
-
+    solve = bottle_cap_check(parser)
+    if parser.video == False:
+        image = solve.process_image()
+        cv2.imshow('result', image)
+        cv2.waitKey(0)
+    else: 
+        solve.process_video()
     # # write log
     # if not os.path.exists ("logs"):
     #     os.makedirs('logs')
@@ -199,5 +162,3 @@ if __name__ == "__main__":
     # cv2.imshow('img', img)
     # cv2.waitKey()
 
-    # Yolo = Yolo_detector("./Detector/cfg/obj.names", "./Detector/cfg/yolov3_Box.cfg", "Detector\model_weigths\yolov3_Box_last.weights")
-    # Yolo.predict_videos('data\VID_20201012_170500.mp4')
