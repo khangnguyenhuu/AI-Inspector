@@ -4,6 +4,12 @@ from Process.color_check import *
 from datetime import date, datetime
 import time
 import argparse
+from tkinter import *
+import PIL.Image, PIL.ImageTk
+import tkinter
+import time
+from threading import Thread
+
 
 def get_day_time():
     today = date.today()
@@ -31,8 +37,8 @@ class bottle_cap_check:
         print (self.parser)
     
     def process_image(self, ori_img = None):
-        if (self.parser.video == False):
-            ori_img = cv2.imread(self.parser.img_path)
+        # if (self.parser.video == False):
+        #     ori_img = cv2.imread(self.parser.img_path)
         img = cv2.resize(ori_img, (ori_img.shape[1]//3, ori_img.shape[0]//3))
         boxes, class_ids = self.Yolo.predict_image(img)
         Not_good = 0
@@ -44,7 +50,6 @@ class bottle_cap_check:
         if (6 in class_ids):
             Not_good = 1
             cv2.putText(Blank, 'Status: Not good', (Blank.shape[0]//8, Blank.shape[1]//8), cv2.FONT_HERSHEY_SIMPLEX, fontScale = 1, color = (0,0,0), thickness = 2)
-                            
             day, time = get_day_time()
         else:
             for i in range (len(boxes)):
@@ -90,16 +95,83 @@ class bottle_cap_check:
         cv2.destroyAllWindows()
 
 
-if __name__ == "__main__":
+def return_img(frame): 
+    frame = frame
+    thread = Thread(target = solve.process_image)
+    thread.start()
+    image = solve.process_image(frame)
+    image = cv2.resize(image, (1000,500))
+    return image
 
+def process():
+    global parser, solve, btnprocess, photo, T_F
+    print (btnprocess)
+    btnprocess = 1 - btnprocess
+    # thuwr nghiem
+    img1 = cv2.imread('data/data_0.jpeg')
+    img2 = cv2.imread('data/data_22.jpeg')
+    img = []
+    img.append (img1)
+    img.append(img2)
+    i = 0
+    j = -1
+    # -------- 
+    if (btnprocess == 1):
+        prev_sensor = - 1
+        cur_sensor = - 1
+        # video = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture('data\\Wisenet WEBVIEWER - Internet Explorer 2020-10-27 14-40-48.mp4')
+        while i < len(T_F):
+            ret, frame = cap.read()
+            # hàm tins hiệu trả về
+            cur_sensor = T_F[i]
+            print ("cur", cur_sensor)
+            print ("prev",prev_sensor)
+            if (prev_sensor == 0 and cur_sensor == 1):
+                # ret, frame = cap.read()
+                # frame = frame
+                # thread = Thread(target = solve.process_image)
+                # thread.start()
+                # image = solve.process_image(frame)
+                # image = cv2.resize(image, (1000,500))
+                image = return_img(frame)
+                # photo = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(image))
+                # canvas.create_image (0, 0, image = photo, anchor = tkinter.NW)
+                # cap.release()
+                # cv2.destroyAllWindows()
+                photo = PIL.ImageTk.PhotoImage(image=PIL.Image.fromarray(image))
+                canvas.create_image (0, 0, image = photo, anchor = tkinter.NW)
+                canvas.update()
+                # cv2.destroyAllWindows()
+          
+            prev_sensor = cur_sensor
+            i += 1
+
+ 
+if __name__ == "__main__":
+    
     parser = parse_args()
     solve = bottle_cap_check(parser)
-    if parser.video == False:
-        image = solve.process_image()
-        cv2.imshow('result', image)
-        cv2.waitKey(0)
-    else: 
-        solve.process_video()
+    T_F = [False,False, False, False, False, False, False, False, False, False, True, True, True, True, True, True, True, True, True, True, True, True, True, False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,True,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False,False] 
+    
+    #draw UI
+    window = Tk()
+    window.title ("Bottle Cap Inspection")
+    btnprocess = 0
+    btn = Button (window, text = "Process", command = process)
+    btn.pack()
+    photo = None
+    canvas = Canvas(window, height = 500, width = 1000)
+    canvas.pack()  
+    window.mainloop() 
+    # ----------------------------------- #
+
+            
+
+
+
+
+
     # # write log
     # if not os.path.exists ("logs"):
     #     os.makedirs('logs')
